@@ -73,11 +73,11 @@ Your implementation will be assessed on:
 - Pay attention to number formatting (2 decimal places for currency)
 
 ### Common Pitfalls to Avoid
-- Floating-point precision issues (consider using cents)
-- Forgetting to handle missing/invalid coupon codes
-- Incorrect date comparison for expiration
-- Not handling the payment minimum edge case
-- Improper CSV escaping/formatting
+- Number precision in financial calculations
+- Edge cases in data validation
+- Date/time handling considerations
+- Business rule enforcement
+- Output format compliance
 
 ## Time Management
 You have 15-25 minutes. Suggested breakdown:
