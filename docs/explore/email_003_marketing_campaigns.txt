@@ -1,0 +1,59 @@
+From: lisa.marketing@company.com
+To: sarah.chen@company.com, tom.support@company.com
+CC: marcus.cs@company.com
+Subject: Coupon Campaigns - Marketing Requirements
+Date: Sunday, August 4, 2025, 2:30 PM
+
+Hi Sarah and Tom,
+
+I know we're meeting tomorrow, but wanted to share marketing's vision for the coupon campaigns so everyone's prepared.
+
+First, the naming conventions:
+- WELCOME10: Our evergreen new customer offer. 10% off, no restrictions, expires end of year. Simple and memorable.
+- 5OFF: Dollar-amount discount to drive higher cart values. Requires $10 minimum to protect margins.
+- HALFPAST: Our creative flash sale concept! "It's half past savings time!" 50% off everything for 48 hours only. Expires Aug 15.
+
+(Yes, I know HALFPAST is quirky, but our focus groups loved it. Trust me on this one.)
+
+Tom - from a customer success perspective, we need to be VERY clear about expiration dates. I've seen competitors get roasted on social media for confusing expiration policies. My strong preference is that if we say "expires August 15," customers can use it all day on August 15. None of this "expires at 12:00:01 AM on August 15" nonsense.
+
+Also, coupon codes should definitely be case-insensitive. Our customers shouldn't have to worry about capitalization. I've seen people type:
+- welcome10
+- WELCOME10
+- Welcome10
+- WeLcOmE10 (yes, really)
+
+They should all work.
+
+Sarah - a few other campaign ideas we're considering for Q4:
+- BLACKFRIDAY: 30% off everything
+- HOLIDAY25: $25 off orders over $100
+- FREESHIP: Free shipping (though that's different from discount coupons)
+- VIP20: 20% off for loyalty members
+
+We'll need the system to be flexible enough to handle different types. For now, the three I mentioned up top are our MVP.
+
+Tom/Marcus - what are the most common customer complaints about coupons? I want to make sure we're addressing pain points:
+
+From my research:
+1. Expiration confusion (as mentioned)
+2. Minimum order requirements not clear
+3. Wanting to stack multiple coupons (we're NOT doing this, right?)
+4. Coupon codes not working due to typos/formatting
+
+For #4, we should consider "did you mean?" suggestions in the future. Like if someone types "WELCOME1O" (with the letter O instead of zero), we could suggest "WELCOME10". But that's phase 2.
+
+Oh, one edge case I thought of - what if someone has exactly $10.00 in their cart and uses the 5OFF coupon? That would make it $5.00. Then they remove an item bringing the original total below $10. Does the coupon stay applied? For this internal tool, I guess it doesn't matter since we're processing completed orders, but something to think about for the live system.
+
+Also, we should track which coupons are most popular and their conversion rates. For the internal tool, just usage counts would be helpful.
+
+See everyone tomorrow!
+
+Lisa
+
+P.S. - Marketing is planning a big push for HALFPAST starting Aug 13. We're expecting high volume, so the system needs to be reliable.
+
+--
+Lisa Park
+Director of Marketing
+Follow us on social: @companysavings

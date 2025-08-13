@@ -1,0 +1,177 @@
+MEETING TRANSCRIPT: Friday Morning Stand-up
+Date: Friday, August 9, 2025, 9:15 AM
+Attendees: Mike (Engineering), Alex (Junior Dev), Priya (QA), Sarah (Product), David (DevOps)
+
+Mike: Quick stand-up everyone. Alex, how's the implementation going?
+
+Alex: I've got the basic file reading working. CSV loads fine, JSON parses correctly. Working on the actual discount logic now.
+
+Mike: Any blockers?
+
+Alex: Well, I'm a bit confused about the expiration logic. Yesterday's meeting seemed to change the requirement?
+
+Sarah: Right, yes. So expires_at should be inclusive. If it says August 15th at 23:59:59, the coupon works through the end of August 15th.
+
+Alex: Okay, so less than or equal to comparison?
+
+Mike: Exactly. 
+
+Priya: That's different from what we tested yesterday.
+
+Mike: I know. We'll need to update the test cases.
+
+Sarah: Sorry about the confusion. Lisa was very insistent about customer expectations.
+
+David: Are we still on track for today?
+
+Mike: Should be. The core logic isn't that complex. Alex, how long do you need?
+
+Alex: Maybe two more hours? The edge cases are taking time.
+
+Priya: Speaking of edge cases, I found something interesting in the test data.
+
+Sarah: What's that?
+
+Priya: Order 1011 - it's a 60 cent order with the HALFPAST coupon. That would make it 30 cents after discount.
+
+Mike: Right, that triggers the minimum charge threshold.
+
+Priya: But what's the exact behavior? Do we make it free or reject the coupon?
+
+Sarah: Robert wants to see data before deciding. For now, make it configurable.
+
+Alex: Configurable how? Environment variable?
+
+Mike: Let's just add a constant at the top of the file. ALLOW_FREE_UNDER_MINIMUM = True or False.
+
+David: Which should be the default?
+
+Sarah: True. Make it free. Better customer experience.
+
+Priya: I'll test both paths.
+
+Alex: Oh, another question. For the summary, what format? The spec says markdown but doesn't give details.
+
+Sarah: Keep it simple. Headers for different sections, bullet points for stats, maybe a table for the breakdown by status.
+
+Mike: Something like: Total orders, total discount amount, then a table showing counts for applied, rejected, invalid, expired, none.
+
+Sarah: Perfect. And highlight any anomalies at the bottom.
+
+David: What counts as an anomaly?
+
+Mike: Invalid codes that were attempted, orders that hit the minimum charge threshold, maybe any calculation errors.
+
+Alex: Calculation errors?
+
+Mike: If somehow the math doesn't add up. Shouldn't happen, but good to check.
+
+Priya: What about orders with zero or negative amounts?
+
+Sarah: Flag those as anomalies for sure.
+
+Alex: The test data doesn't have any of those, right?
+
+Priya: No, but I'll add some for edge case testing.
+
+Mike: Good idea. David, is the repo set up?
+
+David: Yep. README template is there. Just need Alex to push the code.
+
+Mike: What about dependencies?
+
+Alex: Using only Python standard library. No pip install needed.
+
+David: Excellent. Easier to run.
+
+Sarah: Can we make sure the README has clear examples? Like the exact command to run?
+
+Alex: Will do. Something like: python validate_coupons.py orders.csv coupons.json
+
+Mike: Maybe with optional output paths too?
+
+Alex: Oh, good idea. Default to results.csv and summary.md but allow overrides.
+
+Priya: Are we validating the input files? What if the CSV is malformed?
+
+Mike: Basic validation. If we can't parse it, error out with a clear message.
+
+Sarah: But don't crash on a single bad row. Skip it and note it in the summary.
+
+Alex: So resilient processing?
+
+Mike: Yeah. Process what we can, flag what we can't.
+
+Priya: What about the CSV headers? Are they required to match exactly?
+
+Alex: Currently I'm using: order_id, customer_id, total_cents, created_at, coupon_code
+
+Mike: That's right. Case-sensitive?
+
+Alex: I was making it case-insensitive for the headers.
+
+Sarah: Good call. More forgiving.
+
+David: What about extra columns? 
+
+Alex: Ignored. We only read what we need.
+
+Priya: And missing columns?
+
+Alex: That would be an error. We need all five columns.
+
+Mike: Fair. Sarah, any other requirements we're missing?
+
+Sarah: I don't think so. Just make sure the cents calculations are exact. Robert will check the math manually.
+
+Alex: Using integers throughout. No floating point.
+
+Mike: Perfect. How about we sync again at 2 PM to review the working version?
+
+Priya: I'll have initial test results by then.
+
+Sarah: Sounds good. Oh, one more thing - can we add timestamps to the summary?
+
+Alex: Like when the report was generated?
+
+Sarah: Exactly. For audit purposes.
+
+Alex: Easy enough.
+
+David: Should we version the tool?
+
+Mike: Let's call it v0.1.0 for the prototype.
+
+Sarah: Works for me.
+
+Priya: What about error codes? Should the tool return different exit codes for different failures?
+
+Mike: Good practice. 0 for success, 1 for input errors, 2 for processing errors?
+
+Alex: I'll add that.
+
+Sarah: Are we logging to stderr for errors?
+
+Mike: Yes, errors to stderr, regular output to stdout.
+
+David: Following Unix conventions. Nice.
+
+Sarah: Great. Anything else?
+
+Alex: Oh, the rounding approach. I'm using round() which does banker's rounding in Python 3.
+
+Mike: Wait, really?
+
+Alex: Actually, no. I just checked. Python 3 uses round-half-to-even, but for cents we want round-half-up.
+
+Mike: Use decimal.Decimal with ROUND_HALF_UP.
+
+Alex: Got it.
+
+Priya: I'll test rounding edge cases specifically.
+
+Sarah: Perfect. Let's wrap up and get back to work.
+
+Mike: Thanks everyone. See you at 2 PM for the demo.
+
+[Meeting ends at 9:35 AM]

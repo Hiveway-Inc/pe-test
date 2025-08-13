@@ -1,0 +1,276 @@
+# JIRA Export - Discount Engine Project
+## Sprint 23.4 - November 2024
+
+---
+## DISC-101: Implement Coupon Validation Engine
+**Type:** Story
+**Status:** In Progress  
+**Assignee:** Mike Chen
+**Story Points:** 8
+**Sprint:** 23.4
+
+### Description
+As a system, I need to validate coupon codes against orders to determine applicable discounts and generate appropriate status messages.
+
+### Acceptance Criteria
+- [x] System accepts CSV file with order data
+- [x] System accepts JSON file with coupon definitions  
+- [x] System validates coupon codes (case-insensitive)
+- [x] System applies percentage discounts correctly
+- [x] System applies amount-off discounts correctly
+- [ ] System handles expired coupons appropriately
+- [ ] System generates results.csv with all required columns
+- [ ] System generates summary.md report
+
+### Comments
+
+**Sarah Miller - Nov 15, 10:30 AM**
+Make sure we handle the case sensitivity properly. Customers shouldn't have to match exact case.
+
+**Mike Chen - Nov 15, 11:15 AM**
+@Sarah Roger that. Making it case-insensitive. Should we also trim whitespace?
+
+**Sarah Miller - Nov 15, 11:18 AM**  
+Yes! Definitely trim whitespace. Actually, strip ALL spaces, not just trim.
+
+**David Kim (QA) - Nov 16, 2:30 PM**
+What about the expiration check? Is it inclusive or exclusive of the expiration date?
+
+**Mike Chen - Nov 16, 2:45 PM**
+Good question. I'm making it inclusive (<=) so coupons work ON the expiration date.
+
+---
+## DISC-102: Handle Stripe Payment Minimum
+**Type:** Bug
+**Priority:** High
+**Status:** In Review
+**Assignee:** Mike Chen
+**Story Points:** 3
+**Sprint:** 23.4
+
+### Description
+Stripe rejects any charge under $0.50. When discounts reduce order total below this threshold, we need special handling.
+
+### Acceptance Criteria
+- [ ] System identifies when final amount is below $0.50
+- [ ] System still marks coupon as "applied" for valid coupons
+- [ ] System adds appropriate message explaining the minimum charge issue
+- [ ] Finance reporting correctly shows these edge cases
+
+### Comments
+
+**Alex Thompson (Finance) - Nov 16, 11:00 AM**
+This is critical. We absolutely cannot charge customers more than their calculated total, but we also can't process charges under 50 cents.
+
+**Mike Chen - Nov 16, 11:30 AM**
+Proposed solution: Mark as "applied" but include note about payment minimum in the message field.
+
+**Jessica Lee (Support) - Nov 16, 11:45 AM**
+Please make the message super clear. Customers will be confused if it says "applied" but payment fails.
+
+**Mike Chen - Nov 16, 2:00 PM**
+How about: "Discount applied successfully. Note: Order total below $0.50 minimum payment threshold"
+
+**Alex Thompson - Nov 16, 2:15 PM**
+Works for me. Make sure the status is still "applied" for reporting.
+
+---
+## DISC-103: Implement Integer Cents Calculation
+**Type:** Technical Task  
+**Status:** Done
+**Assignee:** Mike Chen
+**Story Points:** 2
+**Sprint:** 23.4
+
+### Description
+To avoid floating point precision issues, implement all calculations using integer cents.
+
+### Implementation Notes
+- Convert all dollar amounts to cents on input (multiply by 100)
+- Perform all calculations in integer cents
+- Convert back to dollars only for display (divide by 100)
+- This avoids issues like 0.1 + 0.2 = 0.30000000000000004
+
+### Comments
+
+**Mike Chen - Nov 18, 9:00 AM**
+This will prevent the rounding issues we've been seeing. Working exclusively in integers.
+
+**David Kim - Nov 18, 9:30 AM**
+Don't forget to handle the division properly when converting back. Integer division in Python 3 uses //.
+
+**Mike Chen - Nov 18, 9:45 AM**
+Good catch. Using: dollars = cents / 100.0 to ensure we get float result for display.
+
+---
+## DISC-104: Validate Percentage Ranges
+**Type:** Task
+**Status:** To Do
+**Assignee:** Mike Chen  
+**Story Points:** 1
+**Sprint:** 23.4
+
+### Description
+Add validation to ensure percentage discounts are within valid range.
+
+### Acceptance Criteria
+- [ ] Reject percent_off values less than 0
+- [ ] Reject percent_off values greater than 100
+- [ ] Mark invalid percentages with status "invalid"
+- [ ] Add appropriate error message
+
+### Comments
+
+**David Kim - Nov 19, 3:00 PM**
+Should we allow 0% discount? Technically valid but pointless.
+
+**Sarah Miller - Nov 19, 3:15 PM**
+Yes, allow 0. Marketing might use it for tracking purposes.
+
+**Tom Richards (Marketing) - Nov 19, 3:30 PM**
+Actually we sometimes create 0% "coupons" just to track campaign engagement!
+
+---
+## DISC-105: Generate Summary Report
+**Type:** Story
+**Status:** In Progress
+**Assignee:** Mike Chen
+**Story Points:** 3
+**Sprint:** 23.4
+
+### Description  
+Generate a markdown summary report with statistics about coupon usage.
+
+### Acceptance Criteria
+- [ ] Report shows total orders processed
+- [ ] Report shows count by status (applied, rejected, expired, invalid, none)
+- [ ] Report shows total revenue impact
+- [ ] Report includes example of each status type
+- [ ] Report is in clean markdown format
+
+### Comments
+
+**Sarah Miller - Nov 20, 10:00 AM**
+Make sure the revenue impact is clear. Finance needs to see actual dollars saved.
+
+**Alex Thompson - Nov 20, 10:30 AM**
+Format as currency with 2 decimal places please. $1,234.56 not 1234.56.
+
+**Mike Chen - Nov 20, 11:00 AM**
+Should I show both "potential revenue" and "actual revenue after discounts"?
+
+**Alex Thompson - Nov 20, 11:15 AM**
+Yes! And the difference between them is the "total discount amount"
+
+---
+## DISC-106: Handle Negative Totals
+**Type:** Bug
+**Priority:** Medium
+**Status:** In Progress
+**Assignee:** Mike Chen
+**Story Points:** 2
+**Sprint:** 23.4
+
+### Description
+When amount_off discount exceeds order total, we get negative final amounts. Need to cap at zero.
+
+### Acceptance Criteria
+- [ ] Final amounts never go below $0.00
+- [ ] Discount amount is capped at original order total
+- [ ] Status still shows as "applied"
+- [ ] Message indicates discount was capped
+
+### Comments
+
+**Brian Wilson (QA) - Nov 21, 2:00 PM**
+Found this testing 5OFF coupon on a $2.99 order. Shows -$2.01 final amount.
+
+**Mike Chen - Nov 21, 2:15 PM**
+Interesting edge case. Should we cap at zero or show the actual negative?
+
+**Sarah Miller - Nov 21, 2:30 PM**
+Cap at zero! We can't have negative totals in production.
+
+**Jessica Lee - Nov 21, 2:45 PM**
+But make sure the message explains that the discount was larger than the total.
+
+---
+## DISC-107: Fix Coupon Code with Spaces
+**Type:** Bug
+**Priority:** High  
+**Status:** Done
+**Assignee:** Mike Chen
+**Story Points:** 1
+**Sprint:** 23.4
+
+### Description
+Marketing sent emails with "SAVE 10" (with space) but system expects "SAVE10".
+
+### Resolution
+Strip all spaces from coupon codes before comparison.
+
+### Comments
+
+**Jessica Lee - Nov 20, 4:00 PM**
+URGENT: Multiple customer complaints. Marketing template has space in coupon code.
+
+**Mike Chen - Nov 20, 4:15 PM**
+Quick fix: I'll strip all spaces from both the input and stored coupon codes.
+
+**Tom Richards - Nov 20, 4:30 PM**
+Sorry team! Template is fixed for future emails.
+
+**Mike Chen - Nov 20, 4:45 PM**
+Fix deployed. Now handles: "SAVE10", "SAVE 10", "S A V E 1 0" all the same.
+
+---
+## DISC-108: Add Data Validation
+**Type:** Task
+**Status:** To Do
+**Assignee:** Unassigned
+**Story Points:** 5
+**Sprint:** 23.5 (Next Sprint)
+
+### Description
+Add comprehensive input validation for both CSV and JSON files.
+
+### Acceptance Criteria
+- [ ] Validate CSV has required columns
+- [ ] Validate order amounts are positive numbers
+- [ ] Validate dates are valid format
+- [ ] Validate JSON structure matches expected schema
+- [ ] Handle malformed input gracefully with clear error messages
+- [ ] Don't crash on bad input
+
+### Comments
+
+**David Kim - Nov 22, 10:00 AM**
+This is important for production. We need graceful error handling.
+
+**Sarah Miller - Nov 22, 10:15 AM**
+Pushing to next sprint. Current validation is minimal but functional.
+
+---
+## DISC-109: Performance Optimization
+**Type:** Task
+**Status:** Backlog
+**Assignee:** Unassigned
+**Story Points:** 8
+**Sprint:** Backlog
+
+### Description
+Optimize for large datasets (100k+ orders).
+
+### Notes
+- Current implementation is O(n*m) where n=orders, m=coupons
+- Could optimize with HashMap lookup for coupons
+- Consider processing in batches
+- Maybe parallel processing for large files?
+
+### Comments
+
+**Mike Chen - Nov 22, 3:00 PM**
+Current implementation works fine for expected volumes (<10k orders).
+
+**Sarah Miller - Nov 22, 3:15 PM**
+Let's revisit if we get performance complaints. Not critical for MVP.

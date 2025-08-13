@@ -1,0 +1,51 @@
+From: jennifer.walsh@company.com
+To: sarah.chen@company.com
+CC: mike.rodriguez@company.com, robert.thompson@company.com
+Subject: RE: Coupon System Requirements - Initial Thoughts
+Date: Saturday, August 3, 2025, 10:15 AM
+
+Sarah,
+
+Thanks for putting this together. Adding Robert (CFO) to this thread as he'll want visibility.
+
+You're correct about the Stripe minimum. It's actually a bit worse than just $0.50 - they charge us a flat fee of $0.30 plus 2.9% per transaction. So for any charge under $0.50, we literally lose money on payment processing fees alone. 
+
+Looking at our data from last quarter, we had 127 orders under $1.00 (mostly digital add-ons and clearance items). If half of those used a 50% coupon, we'd have ~60 orders hitting this threshold. That's not huge, but it adds up.
+
+My recommendation:
+- For orders that would result in $0.01-$0.49 after discount: make them free
+- Track these in our reporting as "comped due to minimum charge"
+- Review the data after 30 days to see if we need to adjust
+
+Regarding rounding - yes, standard rounding to nearest cent is fine. I mentioned banker's rounding because that's what our accounting system uses, but for customer-facing amounts, standard rounding is more intuitive. Just make sure we're consistent.
+
+One thing you didn't mention - what about discount caps? Should percentage discounts have maximum dollar amounts? For example, 50% off but max $50 discount? Marketing might want this for high-ticket items.
+
+Also, for the 5OFF coupon requiring $10 minimum - is that $10 before or after tax? I assume before, but let's be explicit. And what exactly happens if someone tries to use 5OFF on a $9.99 order? 
+- Reject with clear message about minimum?
+- Apply partial discount?
+- Silently fail?
+
+I vote for clear rejection with explanation.
+
+For reporting, I need:
+- Total discount amount given
+- Number of successful vs rejected applications
+- Breakdown by rejection reason
+- Any anomalies (especially those free orders)
+- Average discount percentage
+
+Last thing - we should add a unique transaction ID to each row in the results CSV for audit purposes. Maybe just use the order_id?
+
+Robert - FYI we're building an internal tool to validate our coupon logic. This isn't the customer-facing system yet, just a way to ensure our discount calculations are correct.
+
+Let me know if you need our historical discount data for testing.
+
+Best,
+Jennifer
+
+--
+Jennifer Walsh
+Director of Finance
+Direct: 555-0147
+Mobile: 555-9823

@@ -1,0 +1,187 @@
+# Slack Export - #discount-engine Channel
+## Date Range: Nov 15-22, 2024
+
+---
+**Thread: Quick question about coupon codes**
+
+**sarah_pm** - Nov 15, 2:14 PM
+hey team, quick q - are we making coupon codes case sensitive or not?
+
+**mike_eng** - Nov 15, 2:16 PM
+definitely case insensitive. no one wants to deal with that
+
+**jessica_support** - Nov 15, 2:18 PM
+THANK YOU. customers always type these wrong
+
+**sarah_pm** - Nov 15, 2:19 PM
+cool cool. what about spaces? like if someone types "SAVE 10" instead of "SAVE10"?
+
+**mike_eng** - Nov 15, 2:22 PM
+strip whitespace for sure. both leading/trailing and internal spaces
+
+**david_qa** - Nov 15, 2:25 PM
+wait are we stripping ALL whitespace or just trimming?
+
+**mike_eng** - Nov 15, 2:26 PM
+hmm good point. let me think about this after lunch
+
+**sarah_pm** - Nov 15, 3:45 PM
+@mike_eng did you decide?
+
+**mike_eng** - Nov 15, 4:12 PM
+just trim leading/trailing. if they put spaces in the middle that's on them
+
+**jessica_support** - Nov 15, 4:13 PM
+ugh customers definitely add spaces randomly
+
+**mike_eng** - Nov 15, 4:14 PM
+actually you know what, let's strip all spaces. easier
+
+---
+**Thread: Stripe payment minimum issue**
+
+**alex_finance** - Nov 16, 10:32 AM
+@channel urgent - Stripe is rejecting charges under 50 cents. this affects discount orders
+
+**sarah_pm** - Nov 16, 10:33 AM
+oh crap. what do we do with a $0.45 order after discount?
+
+**mike_eng** - Nov 16, 10:35 AM
+we could round up to 50 cents?
+
+**alex_finance** - Nov 16, 10:36 AM
+absolutely not. we can't charge customers more than their total
+
+**jessica_support** - Nov 16, 10:37 AM
+can we just reject the discount in those cases?
+
+**sarah_pm** - Nov 16, 10:38 AM
+that seems bad UX
+
+**mike_eng** - Nov 16, 10:40 AM
+what if we mark it as "applied" but explain we can't process sub-50cent charges?
+
+**alex_finance** - Nov 16, 10:41 AM
+i guess that works. make sure it's clear in the status message
+
+**david_qa** - Nov 16, 10:42 AM
+so status is still "applied" even though we don't actually charge them?
+
+**mike_eng** - Nov 16, 10:43 AM
+yeah it's technically applied, just can't be processed. we'll add a note
+
+---
+**Thread: Expiration date confusion**
+
+**david_qa** - Nov 18, 9:15 AM
+found a bug - coupon expired at midnight but customer used it at 11:59 PM previous day and it was rejected
+
+**mike_eng** - Nov 18, 9:17 AM
+that's not a bug. expiration date means it expires AT that date
+
+**sarah_pm** - Nov 18, 9:18 AM
+wait no, if it expires on Nov 18, it should work all day Nov 18
+
+**mike_eng** - Nov 18, 9:19 AM
+that makes no sense. expires ON nov 18 means nov 18 00:00:00
+
+**david_qa** - Nov 18, 9:20 AM
+every other system i've used includes the full day
+
+**jessica_support** - Nov 18, 9:22 AM
+customers expect it to work the whole day it says it expires
+
+**mike_eng** - Nov 18, 9:25 AM
+fine. expires_at timestamp should be end of day (23:59:59.999)
+
+**sarah_pm** - Nov 18, 9:26 AM
+actually the data has unix timestamps not dates
+
+**mike_eng** - Nov 18, 9:27 AM
+then it's exact. if timestamp is 1699920000 it expires exactly then
+
+**david_qa** - Nov 18, 9:28 AM
+but should the comparison be < or <=?
+
+**mike_eng** - Nov 18, 9:30 AM
+inclusive. <= for expiration check
+
+**sarah_pm** - Nov 18, 9:31 AM
+wait let me double check with marketing what they expect...
+
+**sarah_pm** - Nov 18, 11:45 AM
+marketing says inclusive for the exact second
+
+---
+**Thread: Rounding drama**
+
+**alex_finance** - Nov 19, 3:22 PM
+need a decision on rounding. finance uses banker's rounding for everything
+
+**mike_eng** - Nov 19, 3:23 PM
+what the hell is banker's rounding
+
+**alex_finance** - Nov 19, 3:24 PM
+rounds .5 to nearest even number. so 2.5 -> 2, but 3.5 -> 4
+
+**mike_eng** - Nov 19, 3:25 PM
+that's insane. everyone expects normal rounding
+
+**david_qa** - Nov 19, 3:26 PM
+python's round() actually does banker's rounding by default lol
+
+**mike_eng** - Nov 19, 3:27 PM
+WHAT
+
+**sarah_pm** - Nov 19, 3:28 PM
+can we just avoid rounding? work in cents?
+
+**mike_eng** - Nov 19, 3:29 PM
+yeah let's do integer cents everywhere
+
+**alex_finance** - Nov 19, 3:30 PM
+fine but display still needs to show dollars properly
+
+**mike_eng** - Nov 19, 3:31 PM
+obviously. we'll convert for display only
+
+---
+**Thread: Random Friday conversation**
+
+**tom_marketing** - Nov 22, 4:45 PM
+btw team great work on this! customers are going to love the HALFPAST coupon
+
+**sarah_pm** - Nov 22, 4:46 PM
+HALFPAST?
+
+**tom_marketing** - Nov 22, 4:47 PM
+50% off. HALF off PAST season items. get it? 😄
+
+**jessica_support** - Nov 22, 4:48 PM
+tom that's terrible
+
+**tom_marketing** - Nov 22, 4:49 PM
+😢
+
+**mike_eng** - Nov 22, 4:50 PM
+wait is that 50% off or $50 off?
+
+**tom_marketing** - Nov 22, 4:51 PM
+percent obviously
+
+**david_qa** - Nov 22, 4:52 PM
+we should probably validate that percent_off is between 0 and 100
+
+**mike_eng** - Nov 22, 4:53 PM
+0 and 1 you mean?
+
+**david_qa** - Nov 22, 4:54 PM
+no the json has it as 10 for 10%, 50 for 50%
+
+**mike_eng** - Nov 22, 4:55 PM
+oh right. yeah 0-100 validation then
+
+**sarah_pm** - Nov 22, 4:56 PM
+everyone have a good weekend! we launch Monday! 🚀
+
+**everyone** - 🎉🎊😅😬

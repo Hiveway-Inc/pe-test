@@ -1,0 +1,34 @@
+{
+  "coupons": [
+    {
+      "code": "SAVE10",
+      "type": "percent_off",
+      "value": 10,
+      "expires_at": 1732406400
+    },
+    {
+      "code": "WELCOME10",
+      "type": "percent_off", 
+      "value": 10,
+      "expires_at": 1735689600
+    },
+    {
+      "code": "5OFF",
+      "type": "amount_off",
+      "value": 5.00,
+      "expires_at": 1733011200
+    },
+    {
+      "code": "HALFPAST",
+      "type": "percent_off",
+      "value": 50,
+      "expires_at": 1733097600
+    },
+    {
+      "code": "EXPIRED20",
+      "type": "percent_off",
+      "value": 20,
+      "expires_at": 1700524800
+    }
+  ]
+}

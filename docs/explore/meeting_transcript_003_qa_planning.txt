@@ -1,0 +1,175 @@
+MEETING TRANSCRIPT: QA Test Planning Session
+Date: Wednesday, August 7, 2025, 11:00 AM
+Attendees: Priya (QA Lead), Sam (QA Engineer), Jennifer (Finance), Customer Support Rep (Marcus)
+
+Priya: Thanks for joining everyone. I wanted to get your input on test scenarios for the coupon system before we finalize our test plan.
+
+Sam: I've been looking at the requirements. There's some ambiguity around the expiration timestamps.
+
+Jennifer: Oh god, not the timestamp discussion again.
+
+Priya: What's the issue?
+
+Jennifer: Well, if we say a coupon expires on August 15th, customers think they can use it all day on the 15th. But if we set expires_at to midnight on the 15th, technically it expires the moment August 15th begins.
+
+Marcus: From customer support perspective, this is going to cause SO many tickets. I guarantee it.
+
+Sam: So what's the decision?
+
+Jennifer: Mike said they're treating the expires_at timestamp as exclusive - it's the first moment the coupon is NOT valid.
+
+Marcus: That's going to confuse people.
+
+Priya: Let's make sure we test both sides of the boundary. Order one second before expiration, order exactly at expiration, order one second after.
+
+Sam: Good idea. What about the minimum charge situation?
+
+Jennifer: Right, so Stripe won't process anything under fifty cents. It actually costs us more in fees than we'd collect.
+
+Marcus: I had three customers last week asking about small orders with discounts. One person had a seventy-five cent item and wanted to use a percentage coupon.
+
+Priya: What did you tell them?
+
+Marcus: I honestly didn't know. I escalated to my manager.
+
+Jennifer: For now, if the final total would be under fifty cents but above zero, we're making it free.
+
+Sam: "For now"?
+
+Jennifer: Sarah wants to A/B test it. Some users might prefer being told they need to add more items.
+
+Priya: So we need to test: order that goes to exactly fifty cents, forty-nine cents, one cent, and zero cents.
+
+Sam: What about negative? Like if someone has a five dollar coupon on a three dollar order?
+
+Jennifer: Never negative. The maximum discount is the order total.
+
+Marcus: Thank god. Explaining negative totals would be a nightmare.
+
+Priya: What about rounding? I see orders in the test data with odd amounts.
+
+Jennifer: Round to nearest cent. Standard rounding, not banker's rounding.
+
+Sam: What's banker's rounding?
+
+Jennifer: It's this thing where you round to the nearest even number. Some financial systems use it to avoid systematic bias. But we're keeping it simple.
+
+Priya: So $10.015 becomes $10.02?
+
+Jennifer: Exactly.
+
+Marcus: Can I bring up coupon codes for a second? Customers NEVER type them correctly.
+
+Priya: What do you mean?
+
+Marcus: They'll add spaces, use wrong case, add dashes... I've seen "WELCOME10" typed as "welcome-10", "WELCOME 10", "welcom10" without the E...
+
+Sam: Oh, typos. We should test that.
+
+Priya: The system is case-insensitive, and Mike said they're stripping whitespace. But typos would just be invalid codes.
+
+Marcus: Right, but can we make sure the error message is clear? "Invalid code" vs "Expired code" vs "Minimum order not met"?
+
+Priya: Good point. Sam, let's test each rejection reason separately.
+
+Sam: What about the 5OFF coupon with minimum order requirement?
+
+Jennifer: Right, five dollars off but only on orders of ten dollars or more.
+
+Marcus: Pre or post tax?
+
+Jennifer: Pre-tax. Always pre-tax. We're not dealing with tax in this system.
+
+Priya: So an order of $9.99 would be rejected?
+
+Jennifer: Correct. It needs to be exactly $10.00 or more in product total.
+
+Sam: What if someone has exactly $10.00 and uses the 5OFF coupon, bringing it to $5.00, then they have WELCOME10 as well?
+
+Priya: Mike said no stacking. One coupon per order.
+
+Marcus: But what if they try? What's the error?
+
+Priya: Good question. If they submit multiple codes, which one wins?
+
+Jennifer: The CSV only has one coupon_code field per order, so it's not possible in our system.
+
+Sam: Oh right, this is for internal processing, not customer-facing.
+
+Marcus: Wait, so customers won't be using this directly?
+
+Priya: Not initially. This is for batch processing orders that have already been placed.
+
+Marcus: Oh! That changes things. So we're validating after the fact?
+
+Jennifer: Sort of. It's for reporting and reconciliation. Making sure our discounts are being applied correctly.
+
+Priya: Let's test some edge cases. What about empty coupon codes?
+
+Sam: That should be status 'none', right?
+
+Jennifer: Correct. Not every order has a coupon.
+
+Priya: What about whitespace-only coupon codes? Like someone just hit spacebar?
+
+Sam: Good one. That should probably also be 'none' after stripping whitespace.
+
+Marcus: Are there any restricted coupon codes? Like SQL injection attempts?
+
+Priya: [laughs] It's reading from a CSV, not a database. But good security mindset.
+
+Sam: Still, what if the coupon code contains special characters?
+
+Jennifer: The codes are alphanumeric only. But the system should handle anything gracefully.
+
+Priya: Let's test with some weird inputs then. Emoji, special characters, super long strings...
+
+Marcus: Speaking of long strings, is there a maximum length for coupon codes?
+
+Jennifer: Marketing usually keeps them under 20 characters. But the system shouldn't break on longer ones.
+
+Sam: It should just mark them as invalid if they don't match any defined coupon.
+
+Priya: What about the HALFPAST coupon? That's 50% off?
+
+Jennifer: Yes, and it expires soon. August 15th I think?
+
+Sam: The test data shows orders on August 13th, so they should work.
+
+Marcus: Fifty percent off anything? No restrictions?
+
+Jennifer: No minimum order for that one. Marketing wanted a simple flash sale.
+
+Priya: So a one dollar order becomes fifty cents with HALFPAST.
+
+Jennifer: Yes.
+
+Sam: And a sixty cent order becomes thirty cents, which triggers the free-under-minimum rule?
+
+Jennifer: Exactly! Good test case.
+
+Marcus: This is getting complicated.
+
+Priya: That's why we test everything. I'll document all these scenarios.
+
+Sam: How should we format the test report?
+
+Priya: Let's do a simple table - input, expected output, actual output, pass/fail.
+
+Jennifer: And flag any that hit the minimum charge threshold. I want to track how often that happens.
+
+Marcus: Can we also track the most commonly used invalid codes? Might indicate typos we should account for.
+
+Priya: Good idea. The summary should include that.
+
+Sam: When do we need the test plan finalized?
+
+Priya: By end of day. Mike wants to review it tomorrow morning.
+
+Marcus: Let me know if you need more customer perspective. I have plenty of coupon horror stories.
+
+Jennifer: Please no more horror stories. Let's just make this work.
+
+Priya: Thanks everyone. This was really helpful.
+
+[Meeting ends at 11:45 AM]

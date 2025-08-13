@@ -1,0 +1,79 @@
+From: mike.rodriguez@company.com
+To: alex.dev@company.com, priya.qa@company.com
+CC: sarah.chen@company.com, david.ops@company.com
+Subject: Coupon Validator - Technical Spec
+Date: Monday, August 5, 2025, 7:45 AM
+
+Team,
+
+Ahead of our 9 AM kickoff, here's my thinking on the technical implementation.
+
+Alex - you'll be taking lead on the coding. Here's the basic architecture:
+
+1. Input Processing:
+   - Read orders.csv with columns: order_id, customer_id, total_cents, created_at, coupon_code
+   - Read coupons.json with structure: code, type, percent/amount_cents, min_total_cents (optional), expires_at
+   - Use standard library only - csv and json modules, no pandas needed
+
+2. Validation Logic:
+   - Case-insensitive coupon matching (normalize to uppercase internally)
+   - Strip whitespace from coupon codes
+   - Check expiration (expires_at is inclusive - valid through that timestamp)
+   - Check minimum order requirements
+   - Calculate discount:
+     * Percent: round(total * percent / 100)
+     * Amount: min(amount_cents, total_cents) - never go negative
+   - Handle sub-$0.50 edge case (make free vs reject - needs config flag)
+
+3. Output:
+   - results.csv: order_id, original_total_cents, discount_cents, final_total_cents, status, reason
+   - summary.md: Stats, counts by status, anomalies
+   - Status values: applied, rejected, invalid, expired, none
+
+4. Edge Cases to Handle:
+   - Empty/whitespace-only coupon codes → status: none
+   - Non-existent coupon codes → status: invalid
+   - Expired coupons → status: expired  
+   - Minimum not met → status: rejected
+   - Would go below $0.50 → status: applied (or rejected based on config)
+   - Malformed input files → error with clear message
+   - Zero/negative order totals → process but flag as anomaly
+
+Priya - for testing, let's make sure we cover:
+- Boundary conditions (exactly $10.00 with 5OFF, exactly $0.50 final, expiration at exact timestamp)
+- Rounding edge cases ($10.015 → $10.02)
+- All status types
+- Malformed inputs
+- Performance with 1000+ orders
+
+David - for deployment:
+- Simple Python script, no build process needed
+- Clear README with usage examples
+- Version 0.1.0 for prototype
+- Exit codes: 0 (success), 1 (input error), 2 (processing error)
+
+The tricky bits:
+
+1. Expiration: After discussion with Sarah, expires_at is INCLUSIVE. So "2025-08-15T23:59:59Z" means the coupon works through the end of Aug 15. Use <= comparison.
+
+2. Rounding: Use decimal.Decimal with ROUND_HALF_UP for consistent cent rounding. Python's built-in round() does banker's rounding which we don't want.
+
+3. The $0.50 threshold: Jennifer says make it free, Robert might disagree. Add a flag: ALLOW_FREE_UNDER_MINIMUM = True (default)
+
+Let's keep it simple and clean. This is a prototype, but Robert will be checking our math, so accuracy is critical.
+
+Questions before we start:
+- Should we validate datetime formats or assume well-formed ISO 8601?
+- Should we support partial processing if some orders fail, or fail fast?
+- Do we need progress output for large files?
+
+My vote: assume well-formed dates, partial processing with error reporting, no progress output for v1.
+
+Alex - can you have basic file I/O working by lunch? I'll help with the discount logic after.
+
+Mike
+
+--
+Mike Rodriguez
+Engineering Lead
+"Make it work, make it right, make it fast"

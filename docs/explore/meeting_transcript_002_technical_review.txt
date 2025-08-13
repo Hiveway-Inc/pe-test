@@ -1,0 +1,143 @@
+MEETING TRANSCRIPT: Technical Review Session
+Date: Tuesday, August 6, 2025, 2:30 PM
+Attendees: Mike (Engineering Lead), Alex (Junior Dev), Priya (QA), David (DevOps)
+
+Mike: Okay, so I've been thinking about the coupon validator architecture. Alex, you'll be helping me build this.
+
+Alex: Cool! So it's a CLI tool, right? Not a web service?
+
+Mike: Correct. It needs to run locally, read files, process them, output results. No database, no API calls. Keep it simple.
+
+Priya: What about testing? What are our test scenarios?
+
+Mike: Good question. Let me think... We need to test percent discounts, amount discounts, expired coupons, invalid codes, minimum order requirements...
+
+Alex: Oh, and that weird edge case with the fifty cent minimum charge thing.
+
+Mike: Right. So yesterday Sarah and Jennifer were going back and forth on this. If the final total after discount is less than 50 cents, we might just make it free.
+
+David: "Might"? That's not very definitive.
+
+Mike: I know. Let's build it so we can easily flip between behaviors. Maybe a config flag or something.
+
+Priya: What about rounding? I remember this being a huge issue on the last project.
+
+Mike: Standard rounding to nearest cent. Though Jennifer mentioned something about banker's rounding, but I think we're ignoring that.
+
+Alex: What's banker's rounding?
+
+Mike: It's when you round to the nearest even number to avoid bias. But honestly, for cents, it doesn't matter much.
+
+David: Are we logging anything? For debugging?
+
+Mike: We should probably log edge cases. Like when we apply the free-under-fifty-cents rule, or when someone tries to use an expired coupon.
+
+Priya: Speaking of expired coupons, how exactly does expiration work? Is it inclusive or exclusive of the expiration date?
+
+Mike: That's... still being figured out. For now, let's assume if expires_at is "2025-08-15T00:00:00Z" and the order is at "2025-08-14T23:59:59Z", the coupon is still valid.
+
+Alex: So less than, not less than or equal to?
+
+Mike: Exactly. The timestamp is the first moment it's NOT valid anymore.
+
+Priya: That's confusing for users though.
+
+Mike: I know, but Tom is researching what competitors do. We'll adjust if needed.
+
+David: What about performance? How many orders are we processing?
+
+Mike: For the prototype, probably just dozens. But eventually could be thousands. 
+
+Alex: Should we stream the CSV or load it all into memory?
+
+Mike: For now, just load it. We can optimize later if needed. The files won't be huge initially.
+
+Priya: What about malformed data? What if the CSV has missing fields? Or the JSON is invalid?
+
+Mike: Good point. We need graceful error handling. If an order has a missing or malformed coupon code, mark it as 'invalid' but keep processing other orders.
+
+Alex: What about the order total? Can it be negative or zero before applying coupons?
+
+Mike: Hmm. Let's assume all input totals are positive integers representing cents. If we see zero or negative, flag it as an anomaly in the summary.
+
+David: Speaking of the summary, what exactly goes in there?
+
+Mike: Total orders processed, total discounts applied, breakdown by status - how many applied, rejected, expired, etc. Plus any anomalies.
+
+Priya: Define anomalies.
+
+Mike: Invalid coupon codes, orders that would go below fifty cents, maybe orders with zero or negative totals to start with... Actually, let's track any order where the final total is zero due to our free-under-minimum rule.
+
+Alex: Should we validate that percentage discounts are between 0 and 100?
+
+Mike: Good catch. Yes. And percent discounts should never reduce the price by more than 100%.
+
+David: What about the coupon JSON structure? Is that locked down?
+
+Mike: Pretty much. Each coupon has a code, type (percent_off or amount_off), value (percent or amount_cents), optional min_total_cents, and expires_at.
+
+Priya: Value or percent AND amount_cents as separate fields?
+
+Mike: Oh right, Sarah showed me the schema. It's actually separate fields - "percent" for percent_off type and "amount_cents" for amount_off type.
+
+Alex: That's a bit redundant but okay.
+
+Mike: Yeah, but it makes the validation clearer. A percent_off coupon shouldn't have an amount_cents field and vice versa.
+
+Priya: What about case sensitivity for coupon codes?
+
+Mike: Case-insensitive. WELCOME10, welcome10, WeLcOmE10 - all the same.
+
+David: Are we generating any logs for debugging?
+
+Mike: Let's keep it simple. Just the output CSV and summary markdown. We can add logging if needed.
+
+Alex: What about internationalization? Currency symbols?
+
+Mike: USD only. Everything in cents to avoid floating-point issues. The summary can show dollars for readability.
+
+Priya: Test data - do we have any?
+
+Mike: Sarah sent some. I'll forward it. Eleven orders, three coupon types. Mix of scenarios.
+
+David: And we're building this in Python?
+
+Mike: Or Node. Dealer's choice. What's everyone comfortable with?
+
+Alex: I prefer Python.
+
+Priya: Python's good for data processing.
+
+Mike: Python it is then. We'll use pandas for CSV processing probably.
+
+Alex: Do we need pandas? Couldn't we just use the csv module?
+
+Mike: True. Let's keep dependencies minimal. Standard library only if possible.
+
+Priya: I'll start writing test cases based on this discussion.
+
+Mike: Perfect. Alex, can you start with the basic file I/O? Read the CSV and JSON, just output them to verify?
+
+Alex: On it.
+
+David: I'll set up the repository structure. Do we need CI/CD for this?
+
+Mike: Not yet. It's a prototype. But make sure we have a clear README with running instructions.
+
+Priya: When do we review the first version?
+
+Mike: Thursday morning? That gives us tomorrow to build.
+
+Alex: Sounds good. Oh wait, one more question - what if a coupon code is empty in the CSV?
+
+Mike: Treat it as "no coupon" - status should be 'none', no discount applied.
+
+Priya: And spaces? What if someone typed " WELCOME10 " with spaces?
+
+Mike: Strip whitespace, then process. Good edge case to test.
+
+David: Alright, I think we have enough to start. Let's reconvene Thursday.
+
+Mike: Thanks everyone. Let's build this thing.
+
+[Meeting ends at 3:15 PM]

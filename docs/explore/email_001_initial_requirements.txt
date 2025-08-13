@@ -1,0 +1,47 @@
+From: sarah.chen@company.com
+To: mike.rodriguez@company.com, jennifer.walsh@company.com
+CC: lisa.marketing@company.com
+Subject: Coupon System Requirements - Initial Thoughts
+Date: Friday, August 2, 2025, 4:23 PM
+
+Hey team,
+
+Following up on our conversation earlier this week about the coupon system. I wanted to get some initial requirements down in writing before our Monday kickoff.
+
+Jennifer - you mentioned something about Stripe's minimum charge being $0.50? Can you confirm? This might affect how we handle small orders with large discounts. I'm thinking if an order would go below that threshold after applying a coupon, we might need to either:
+a) Block the coupon application
+b) Make the order free
+c) Require a minimum order amount
+
+I'm leaning toward option B for customer experience, but would love your input from a finance perspective.
+
+Mike - for the technical implementation, we need to support both percentage-based and fixed-amount discounts. Marketing wants to run different types of campaigns:
+- WELCOME10: 10% off for new customers (no minimum)
+- 5OFF: $5 off orders over $10
+- Various flash sales with 50% off (Lisa is calling one "HALFPAST" for some reason)
+
+The system should read orders from a CSV and coupon definitions from JSON, then output results to another CSV plus a human-readable summary. This is just for internal use initially, not customer-facing.
+
+Lisa - can you confirm the coupon code format? I'm assuming alphanumeric, no spaces, case-insensitive?
+
+Also, we need to nail down the expiration logic. If a coupon expires on Aug 15, does that mean:
+- It works until 11:59:59 PM on Aug 14? (exclusive)
+- It works until 11:59:59 PM on Aug 15? (inclusive)
+
+This always confuses customers, so let's be really clear.
+
+Other quick notes:
+- No coupon stacking (one per order max)
+- USD only for now
+- Apply discounts to pre-tax totals
+- Never allow negative totals
+- Round to nearest cent (standard rounding, not banker's)
+
+Let me know if I'm missing anything major. Would be great to have everyone aligned before Monday.
+
+Have a good weekend!
+Sarah
+
+--
+Sarah Chen
+Senior Product Manager

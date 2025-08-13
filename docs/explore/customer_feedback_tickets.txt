@@ -1,0 +1,149 @@
+# Customer Support Ticket Export
+## Discount System Feedback - Nov 2024
+
+---
+**Ticket #4521**
+**Date:** Nov 20, 2024, 3:22 PM
+**Customer:** Janet Williams
+**Subject:** Coupon code not working???
+
+Hi, I'm trying to use the code SAVE10 that I got in my email but your site keeps saying it's invalid. I tried typing it exactly as shown. This is really frustrating as I'm trying to order gifts for thanksgiving.
+
+I typed: save10
+Then I tried: SAVE10
+Then: Save10
+
+Nothing works! My order total is $67.50.
+
+**Support Response (Jessica):** Nov 20, 3:45 PM
+Hi Janet, I'm so sorry for the trouble. Let me look into this for you...
+
+**Internal Note (Jessica):** Code was "SAVE 10" with a space in the email template. Customer was typing it without the space. Marketing needs to fix their templates.
+
+**Resolution:** Applied discount manually. Customer happy.
+
+---
+**Ticket #4522** 
+**Date:** Nov 20, 2024, 4:15 PM
+**Customer:** Robert Chen
+**Subject:** Wrong discount amount
+
+Your system is broken. I used coupon code 5OFF which should give me $5 off, but my total went from $3.99 to $0.00. That's only $3.99 off, not $5. False advertising much?
+
+**Support Response (Jessica):** Nov 20, 4:32 PM
+Hi Robert, Thanks for reaching out. The $5 OFF coupon provides up to $5 off your order. Since your order was $3.99, it reduced it to $0. However, please note that we have a minimum charge amount...
+
+**Internal Note (Jessica):** Another sub-$5 order. System correctly applied discount but customer expects to somehow get $5 even if order is less. Also hit the Stripe minimum issue - couldn't actually process the $0 charge.
+
+---
+**Ticket #4523**
+**Date:** Nov 21, 2024, 9:10 AM  
+**Customer:** Maria Rodriguez
+**Subject:** Expired coupon still showing as active
+
+I have a coupon that says it expired on Nov 21, but when I tried to use it this morning (Nov 21) it said it was expired. If it expires on the 21st, shouldn't it work ON the 21st? Every other website I use lets you use coupons on the expiration date.
+
+Order attempt was at 9:10 AM EST on Nov 21.
+Coupon: FALLSALE
+
+**Support Response (Jessica):** Nov 21, 9:45 AM
+You're absolutely right, Maria. This is a known issue we're working on...
+
+**Internal Note (Jessica):** The expiration timestamp was set to Nov 21 00:00:00 UTC, which is Nov 20 7:00 PM EST. Customer is in New York. Timezone issue + the whole inclusive/exclusive date problem.
+
+---
+**Ticket #4524**
+**Date:** Nov 21, 2024, 11:30 AM
+**Customer:** David Park  
+**Subject:** Coupon worked but weird total
+
+Hi, I used the WELCOME10 code (10% off for new customers - yay!) and it worked, but the math seems off?
+
+My order:
+- Item 1: $15.99
+- Item 2: $22.50  
+- Item 3: $18.25
+Subtotal: $56.74
+
+After 10% discount I expected: $51.07 (I calculated $56.74 * 0.9)
+But your system shows: $51.06
+
+Is it stealing my penny??? 😅
+
+**Support Response (Mark):** Nov 21, 11:45 AM
+Hi David! Thanks for the detailed breakdown. Let me check this...
+
+**Internal Note (Mark):** Customer is right. Looks like a rounding issue. System calculated in cents: 5674 * 0.9 = 5106.6, rounded to 5107 cents = $51.07. But somewhere it's showing $51.06. Dev team says it's "working as intended" with banker's rounding?? 
+
+---
+**Ticket #4525**
+**Date:** Nov 21, 2024, 2:20 PM
+**Customer:** Tracy Nguyen
+**Subject:** Can't use two coupons
+
+Why can't I use two coupon codes? I have WELCOME10 for being a new customer and 5OFF from your Instagram. Other sites let you stack coupons. This is stupid.
+
+Order total: $45.00
+
+**Support Response (Jessica):** Nov 21, 2:35 PM
+Hi Tracy, I understand your frustration. Currently our system only allows one coupon code per order...
+
+**Internal Note (Jessica):** Another stacking request. System is designed for single coupon only. Maybe v2?
+
+---
+**Ticket #4526**
+**Date:** Nov 22, 2024, 10:15 AM
+**Customer:** James Mitchell
+**Subject:** RE: Your 50% off sale
+
+Got your email about "HALFPAST" giving 50% off. Applied it to my $8.99 order:
+$8.99 * 50% = $4.50 off
+So total should be $4.49
+
+But the system shows $4.50 as the total. That's $4.49 OFF, not 50% off. Your math is backwards.
+
+**Support Response (Mark):** Nov 22, 10:30 AM
+Let me check this for you James...
+
+**Internal Note (Mark):** Customer is confusing themselves. System correctly calculated 8.99 * 0.5 = 4.495, rounded to 4.50. Customer expected 4.49 exactly. Rounding strikes again.
+
+---
+**Ticket #4527**
+**Date:** Nov 22, 2024, 2:45 PM
+**Customer:** Linda Thompson  
+**Subject:** Charge declined but coupon says "applied"
+
+This makes no sense. I used the WELCOME10 coupon on my $4.50 order. The system says:
+- Original: $4.50
+- Discount: -$0.45  
+- Final: $4.05
+- Status: "Applied"
+
+But then payment was declined? Your error message says something about "minimum charge amount not met"? But the coupon status says applied? So did it work or not?
+
+**Support Response (Jessica):** Nov 22, 3:00 PM
+Hi Linda, I can explain this. The coupon was correctly applied to calculate your discount. However...
+
+**Internal Note (Jessica):** The under-50-cents Stripe issue again. Coupon was "applied" mathematically but charge couldn't be processed. Status is technically correct but confusing. Final amount would be $0.405 = $0.41 rounded, which is under Stripe's minimum.
+
+---
+**Ticket #4528**
+**Date:** Nov 22, 2024, 4:30 PM
+**Customer:** Brian Foster
+**Subject:** Website broken - negative total?
+
+I think I broke your website 😂
+
+Used coupon 5OFF on a $2.99 item and the website shows:
+Original: $2.99
+Discount: -$5.00  
+Final: -$2.01
+
+It says I have a NEGATIVE total. Do you owe me $2.01 now? 
+
+Just kidding but seriously this should probably show $0.00 right?
+
+**Support Response (Mark):** Nov 22, 4:45 PM
+Hi Brian! Thanks for finding this edge case and having a sense of humor about it...
+
+**Internal Note (Mark):** Amount-off coupons can make totals negative if order is less than discount amount. Should cap at zero. Dev team says they're "handling it correctly" by showing the real math, but this is definitely confusing.

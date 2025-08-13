@@ -1,0 +1,95 @@
+MEETING TRANSCRIPT: Project Kickoff - Coupon System
+Date: Monday, August 5, 2025, 9:00 AM
+Attendees: Sarah (Product), Mike (Engineering), Jennifer (Finance), Tom (Customer Success)
+
+Sarah: Alright everyone, thanks for joining. So we're finally moving forward with the coupon system. I know we've been talking about this for months. Jennifer, you had some concerns about the minimum charge requirements?
+
+Jennifer: Yeah, so I spoke with our payment processor last week. They're pretty firm on that fifty cent minimum. Anything below that, they actually charge us more in fees than we'd collect. It's a Stripe thing.
+
+Mike: Wait, so what happens if someone has like a 60 cent order and uses a 50% off coupon? That's 30 cents.
+
+Jennifer: That's exactly the problem. We either eat the cost and let it go through as free, or we block it entirely.
+
+Tom: From a customer experience perspective, blocking a checkout seems really bad. I mean, they're already at the end of the funnel.
+
+Sarah: Let's table that for now. Mike, technically, can we handle both scenarios? Like make it configurable?
+
+Mike: Sure, but we need to decide soon. Also, quick question - are we doing percent off, dollar off, or both?
+
+Sarah: Both. Marketing really wants flexibility here. We're planning a WELCOME10 campaign - that's 10% off for new users. And then there's seasonal stuff where we might do like $5 off orders over... what was it Jennifer?
+
+Jennifer: Ten dollars. We need minimum order values for the dollar-off coupons. Otherwise someone could buy a $2 item with a $5 coupon and we'd owe them money.
+
+Tom: Oh god, please tell me we're preventing negative totals.
+
+Mike: Obviously. But what about rounding? If someone has a $10.01 order with 10% off, that's $9.009. Do we round up or down?
+
+Jennifer: [shuffling papers] I have notes on this somewhere... I think accounting prefers banker's rounding? But honestly, standard rounding is probably fine. We're talking about cents here.
+
+Sarah: Let's just do standard rounding to the nearest cent. Keep it simple. Oh, and one more thing - Marketing wants to be able to set expiration dates on coupons.
+
+Mike: Timestamps?
+
+Sarah: Yeah, but here's where it gets weird. If a coupon expires at midnight on the 15th, does that mean it works all day on the 14th and stops working when the 15th begins? Or does it work through the 15th?
+
+Tom: In my experience, customers expect it to work through the date shown. So if it says "expires August 15th", they think they can use it on August 15th.
+
+Mike: That's inclusive vs exclusive. I need a clear answer on this.
+
+Sarah: [sighs] Let's... let's figure that out offline. Tom, can you check what our competitors do?
+
+Tom: Sure. Oh, another thing - customer service is going to need good error messages. If someone tries to use an expired coupon, we need to tell them it's expired, not just "invalid code."
+
+Mike: So we need different statuses. Applied, rejected, expired, invalid...
+
+Sarah: And "none" for orders without coupons. We want to track everything.
+
+Jennifer: Speaking of tracking, I need a summary report. Total discounts given, how many coupons were used successfully vs rejected, any weird edge cases...
+
+Mike: Define "weird edge cases."
+
+Jennifer: Like if someone tries to use a coupon that doesn't exist, or if we're seeing a lot of those below-minimum-charge situations. Anything that might indicate a problem or abuse.
+
+Tom: Are we allowing multiple coupons per order?
+
+Sarah: No! Absolutely not. One coupon per order. Marketing was very clear about that. No stacking.
+
+Mike: Good, that makes my life easier. What about the coupon codes themselves? Any restrictions?
+
+Sarah: Alphanumeric, no spaces, case-insensitive. We're starting with three campaigns: WELCOME10, 5OFF, and... what was the last one?
+
+Tom: HALFPAST. Marketing's idea. It's a flash sale thing - 50% off but only valid for like 48 hours.
+
+Mike: HALFPAST? That's a weird name for a coupon.
+
+Sarah: Don't ask. Marketing loved it. Something about "half past savings time" or whatever.
+
+Jennifer: Can we make sure the system handles all caps, lowercase, mixed case? Customers are going to type these in all sorts of ways.
+
+Mike: Yeah, I'll normalize everything to uppercase internally.
+
+Sarah: Great. Oh, one more thing - this is USD only for now, right?
+
+Jennifer: Correct. We'll deal with multi-currency in Q2 if this goes well.
+
+Tom: What about taxes?
+
+Sarah: [groans] Let's not even go there. The coupon applies to the order total before taxes. Keep it simple.
+
+Mike: So just to clarify - read orders from a CSV, read coupon definitions from... JSON? And output what exactly?
+
+Sarah: Another CSV with the results, plus a human-readable summary. This is initially just for our internal tool, not customer-facing.
+
+Mike: Got it. When do you need this?
+
+Sarah: End of week for a prototype? Doesn't have to be perfect, just functional enough to test with.
+
+Tom: And we'll iterate from there based on what we learn.
+
+Jennifer: Just make sure the math is right. That's all I care about.
+
+Mike: Understood. I'll start working on it.
+
+Sarah: Perfect. Let's sync again Wednesday to see where we're at. Thanks everyone!
+
+[Meeting ends at 9:42 AM]

@@ -1,0 +1,199 @@
+MEETING TRANSCRIPT: Stakeholder Check-in
+Date: Thursday, August 8, 2025, 3:00 PM
+Attendees: Sarah (Product), Tom (Customer Success), Lisa (Marketing), CFO (Robert), Mike (Engineering)
+
+Robert: Sarah, before we start, I need to understand the financial implications here. How much are we potentially giving away in discounts?
+
+Sarah: Based on our projections, probably around 8-12% of revenue initially. Lisa, you have the campaign details?
+
+Lisa: Yes! So we're launching with three campaigns. WELCOME10 is for new customers - 10% off their first order, no restrictions. It expires end of year, so plenty of runway.
+
+Robert: No restrictions? What if someone buys something for a dollar?
+
+Lisa: They get ten cents off. It's about acquisition, not profit on that first order.
+
+Robert: [sighs] Fine. What else?
+
+Lisa: 5OFF is five dollars off, but we're requiring a minimum ten dollar purchase. This one expires end of August.
+
+Tom: That's pretty soon. Only a few weeks.
+
+Lisa: It's meant to drive urgency. Then there's HALFPAST - our flash sale. 50% off everything.
+
+Robert: Fifty percent?! 
+
+Lisa: Only for 48 hours! It expires August 15th. It's a brand awareness play.
+
+Robert: That seems aggressive.
+
+Sarah: It's a test. We want to see the response. If it's too generous, we won't do it again.
+
+Mike: Just to clarify, when you say "expires August 15th", you mean it stops working at midnight on the 15th?
+
+Lisa: No! It should work through the end of August 15th.
+
+Mike: That's not what the technical spec says.
+
+Tom: This is exactly what I was worried about. Customers will expect it to work all day on the 15th.
+
+Sarah: Mike, can we adjust?
+
+Mike: We can, but I need a clear decision. Does expires_at "2025-08-15T00:00:00Z" mean it works through August 14th or August 15th?
+
+Robert: What do other companies do?
+
+Tom: I researched this. It's mixed. Amazon includes the end date, Uber Eats excludes it.
+
+Lisa: We should include it. It's more customer-friendly.
+
+Robert: But that's an extra day of discounts.
+
+Sarah: It's a few hours difference. Let's include the end date for now.
+
+Mike: So expires_at is the last valid moment, not the first invalid moment?
+
+Sarah: Wait no, that's confusing me. Let me think...
+
+Tom: How about this: if expires_at is "2025-08-15T23:59:59Z", it works through the end of August 15th.
+
+Mike: That's inclusive. I can work with that.
+
+Robert: Fine. What about this fifty cent minimum charge issue?
+
+Sarah: Right. Jennifer mentioned Stripe won't process charges under fifty cents.
+
+Robert: So what happens if a discount brings an order below that?
+
+Tom: Customer support thinks we should just make it free. It's good customer experience.
+
+Robert: We're giving away product for free?
+
+Lisa: It would be rare. How many orders are under a dollar to begin with?
+
+Mike: In the test data, I see one case where it might happen. 
+
+Sarah: I think for amounts that small, the goodwill is worth more than the revenue.
+
+Robert: I disagree. We should require a minimum order amount.
+
+Tom: But they've already added items to cart. Blocking them at checkout is terrible UX.
+
+Lisa: What if we show a message? "Add more items to use this coupon"?
+
+Mike: That's a UI concern. This tool is for backend processing.
+
+Sarah: Let's build it to handle both cases. We can decide the policy later.
+
+Robert: I want to see data on how often this happens before we decide.
+
+Tom: Fair. Mike, can the summary show how many orders hit this edge case?
+
+Mike: Already planned. Any order with unusual handling gets flagged in the summary.
+
+Lisa: Speaking of the summary, what metrics are we tracking?
+
+Sarah: Total orders, total discounts given, breakdown by coupon code, success vs. rejection rates.
+
+Robert: I want to see average discount percentage and impact on margin.
+
+Mike: I can calculate average discount. Margin would require cost data we don't have in this system.
+
+Robert: Then just discount as percentage of revenue.
+
+Lisa: Can we see which coupons are most popular?
+
+Mike: The summary will show usage count for each coupon code.
+
+Tom: What about failed attempts? If people are typing codes wrong?
+
+Mike: Those show up as 'invalid' status. We'll count them.
+
+Lisa: Oh! Can we track if people are sharing codes they shouldn't?
+
+Sarah: How would we know?
+
+Lisa: I mean, if we see WELCOME10 used by returning customers...
+
+Mike: This tool doesn't have customer history. It just validates individual orders.
+
+Tom: That's a good point though. Should WELCOME10 be restricted to new customers?
+
+Robert: Absolutely. That's the whole point.
+
+Mike: We don't have that data in the current system.
+
+Sarah: Let's add it to the roadmap for version 2.
+
+Robert: What about fraud? People creating multiple accounts?
+
+Tom: Again, needs customer data we don't have.
+
+Mike: The current scope is just: does this coupon apply to this order based on amount, expiration, and basic rules.
+
+Lisa: That's fine for MVP. When can marketing start using this?
+
+Mike: Tomorrow for the prototype. Early next week for production?
+
+Sarah: That works. Robert, any other concerns?
+
+Robert: Just make sure the math is right. I don't want to explain calculation errors to the board.
+
+Mike: We're using integer cents throughout. No floating point errors.
+
+Robert: Good. And rounding?
+
+Mike: Standard rounding to nearest cent.
+
+Robert: Not banker's rounding?
+
+Sarah: Jennifer brought that up. We decided standard is simpler.
+
+Robert: Fine. But document that decision.
+
+Tom: Speaking of documentation, what should customer support know?
+
+Lisa: They won't see this tool directly, right?
+
+Sarah: Correct. But they should understand the rules for when customers ask about coupon policies.
+
+Tom: I'll write up a simple guide based on the final rules.
+
+Lisa: Make sure to emphasize the one-coupon-per-order rule. That always confuses people.
+
+Robert: No stacking is non-negotiable. Our margins can't handle it.
+
+Mike: Already enforced. The system only accepts one code per order.
+
+Sarah: Perfect. Anything else?
+
+Lisa: Oh! What about coupon code formatting? All caps?
+
+Mike: Case-insensitive. WELCOME10, welcome10, WeLcOmE10 all work.
+
+Lisa: Good. I'll make sure marketing materials are consistent though.
+
+Tom: And spaces? Sometimes people add spaces.
+
+Mike: Stripped automatically. " WELCOME10 " becomes "WELCOME10".
+
+Robert: What if they use dashes or underscores?
+
+Mike: Those would make it invalid. Codes must match exactly after normalization.
+
+Lisa: I'll make sure we don't use any special characters in future codes.
+
+Sarah: Good. I think we're aligned. Mike, let us know if you hit any blockers.
+
+Mike: Will do. Should have something working by tomorrow afternoon.
+
+Robert: And this is all USD, correct? No currency confusion?
+
+Everyone: Yes!
+
+Robert: Good. Keep it simple. We'll deal with international later.
+
+Tom: Famous last words.
+
+Sarah: [laughs] One step at a time. Thanks everyone!
+
+[Meeting ends at 3:45 PM]

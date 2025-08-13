@@ -1,0 +1,61 @@
+From: tom.support@company.com
+To: sarah.chen@company.com, marcus.cs@company.com
+CC: lisa.marketing@company.com, mike.rodriguez@company.com
+Subject: Customer Feedback on Coupon Issues - PLEASE READ
+Date: Monday, August 5, 2025, 8:30 AM
+
+Sarah and team,
+
+Before our meeting, I wanted to share some actual customer feedback we've been getting about coupons. Marcus pulled these from our support tickets.
+
+Here are the top issues we're seeing:
+
+1. **Expiration Confusion** (38% of coupon-related tickets)
+   Customer quote: "The email said the coupon expires on August 15th. I tried to use it at 11:45 PM on August 15th and it said expired. This is false advertising!"
+   Another: "Does 'expires August 15' mean I can use it ON August 15 or does it expire when August 15 starts?"
+
+2. **Minimum Order Requirements** (27% of tickets)
+   "I had $9.99 in my cart and the 5OFF coupon wouldn't work. Adding a 1 cent item seems stupid just to use a coupon."
+   "Why didn't it tell me BEFORE checkout that I needed $10 for the coupon?"
+
+3. **Case Sensitivity** (18% of tickets)
+   "I typed welcome10 and it said invalid. My friend typed WELCOME10 and it worked. Why???"
+   "The email showed 'Welcome10' but I had to type 'WELCOME10' for it to work."
+
+4. **Coupon Stacking Attempts** (12% of tickets)
+   "I'm a new customer AND it's a flash sale. Why can't I use both WELCOME10 and HALFPAST?"
+   "Your competitor allows multiple coupons. Why don't you?"
+
+5. **Small Order Issues** (5% of tickets)
+   "I had a $0.75 item with 50% off. The system just made it free? Is this a bug?"
+   "It said my order was too small to process after applying the coupon. Then why did you let me apply it?"
+
+Marcus has more detailed logs, but the pattern is clear: confusion around expiration and minimums.
+
+My recommendations:
+1. Make expiration inclusive (works through the entire stated date)
+2. Clear error messages: "Coupon expired on [date]" not just "Invalid code"
+3. Different messages for different failures: "Minimum order of $10 required" vs "Coupon code not found"
+4. For the sub-$0.50 issue, I strongly prefer making it free vs blocking. A frustrated customer costs us way more than 50 cents.
+
+Also, we need to train our support team on these rules. Can someone write up a simple one-pager with:
+- How each coupon works
+- Expiration rules
+- Minimum requirements
+- What happens with small orders
+- Why we don't allow stacking
+
+Marcus - anything to add from the frontline?
+
+The good news: when coupons work smoothly, customers love them. We see a 23% increase in order value when customers successfully apply a coupon.
+
+Talk soon,
+Tom
+
+P.S. - That HALFPAST name is going to confuse people. "Half past what?" is already showing up in our social mentions. Maybe we can add a tagline like "50% off - it's half past savings time!" to clarify?
+
+--
+Tom Anderson
+Director of Customer Success
+"Making customers happy since 2019"
+Direct: 555-0199
