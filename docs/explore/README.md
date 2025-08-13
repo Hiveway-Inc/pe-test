@@ -11,7 +11,7 @@ This folder contains various business communications including:
 - Whiteboard notes
 - Customer feedback
 - JIRA tickets
-- Technical notes
+
 
 These documents contain a mix of relevant requirements and typical business "noise" - contradictions, tangents, and evolving decisions that reflect real-world scenarios.
 
